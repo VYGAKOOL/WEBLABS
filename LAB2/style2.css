@@ -10,7 +10,7 @@
     height: 200px;
     margin: 10px;
     padding: 20px;
-    background-color: black;
+    background-color: #fdc833;
     color: white;
     text-align: center;
     display: flex;
@@ -21,7 +21,7 @@
 
 .miniblock{
     position: absolute;
-    background-color: green;
+    background-color: #000b80;
     height: 20px;
     width: 100px;
     left:150px;
