@@ -1,0 +1,37 @@
+.blocks {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.block {
+    width: 200px;
+    height: 200px;
+    margin: 10px;
+    padding: 20px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.miniblock{
+    position: absolute;
+    background-color: green;
+    height: 20px;
+    width: 100px;
+    left:150px;
+    top:200px;
+    transform: rotate(30deg);
+}
+
+@media only screen and (max-width: 600px) {
+    .blocks {
+        flex-direction: column;
+        align-items: center;
+    }
+}
