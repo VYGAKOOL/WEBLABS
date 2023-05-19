@@ -1,32 +1,85 @@
-const userListElement = document.getElementById('user-list');
+/* Fetch users from GitHub API */
+async function getUsers() {
+  const USERS_URL = 'https://api.github.com/users'; // REST API
 
-fetch('https://api.github.com/users')
-  .then(response => response.json())
-  .then(users => {
-    const userContainer = document.createElement('div');
-    userContainer.classList.add('user-container');
+  try {
+      let res = await fetch(USERS_URL);
 
-    users.forEach(user => {
-      const { login, avatar_url, repos_url } = user;
+      return res.json();
+  } catch(error) {
+      console.error(error);
+  }
+}
+/* Fetch user by login field from GitHub API */
+async function getUserById(login) {
+  const USER_URL = `https://api.github.com/users/${login}`; // REST API
 
-      const userElement = document.createElement('div');
-      userElement.classList.add('user');
+  try {
+      let res = await fetch(USER_URL);
 
-      const avatarElement = document.createElement('img');
-      avatarElement.src = avatar_url;
+      return res.json();
+  } catch(error) {
+      console.error(error);
+  }
+}
 
-      const loginElement = document.createElement('a');
-      loginElement.href = repos_url;
-      loginElement.textContent = login;
+/* async opearation - element rendering */
+async function renderUsers() {
+  let users = await getUsers();
+  let html = '';
 
-      userElement.appendChild(avatarElement);
-      userElement.appendChild(loginElement);
+  users.forEach(user => {
+      let htmlSegment = `
+          <div class="user" data-login="${user.login}">
+              <img src="${user.avatar_url}" data-login="${user.login}">
+              <h2>${user.login}</h2>
+          </div>
+      `;
 
-      userContainer.appendChild(userElement);
-    });
-
-    userListElement.appendChild(userContainer);
-  })
-  .catch(error => {
-    console.log('Error:', error);
+      html += htmlSegment;
   });
+
+  const list = document.getElementById('users-list');
+  list.innerHTML = html;
+}
+
+async function showPopup() {
+  const list = document.getElementById('users-list');
+  const popup = document.getElementById('popup-wrapper');
+  const popupCloseBtn = document.querySelector('#popup-close');
+  const popupContent = document.querySelector('#popup-content');
+
+  list.onclick = async ({ target }) => {
+      if (target.dataset.login == undefined) {
+          return;
+      }
+
+      const user = await getUserById(target.dataset.login);
+
+      const html = `
+          <img src="${user.avatar_url}">
+          <div>
+              <h2>${user.login}</h2>
+              <p>name: <b>${user.name}</b></p>
+              <p>company: <b>${user.company ? user.company : '-'}</b></p>
+              <p>location: <b>${user.location ? user.location : '-'}</b></p>
+              <p>blog: <a href="${user.blog}" target="_blank">${user.blog}</a></p>
+              <p>repository: <a href="${user.html_url}" target="_blank">${user.html_url}</a></p>
+          </div>        
+      `;
+
+      popupContent.innerHTML = html;
+
+      // make popup visible
+      popup.style.top = 0;
+
+      popupCloseBtn.addEventListener('click', () => {
+          popup.style.top = '-100%';
+      });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderUsers();
+  showPopup();
+}, false);
